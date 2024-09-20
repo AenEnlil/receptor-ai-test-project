@@ -4,6 +4,7 @@ from fastapi import FastAPI, Depends
 from .api import api_router
 from .auth.dependencies import JWTBearer
 from .config import get_settings
+from .middleware import RequestLoggingMiddleware
 
 
 def get_application() -> FastAPI:
@@ -11,6 +12,8 @@ def get_application() -> FastAPI:
     application = FastAPI()
 
     application.include_router(api_router, prefix='/api/v1')
+
+    application.add_middleware(RequestLoggingMiddleware)
 
     return application
 
