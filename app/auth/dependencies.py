@@ -22,7 +22,12 @@ class JWTBearer(HTTPBearer):
             raise HTTPException(status_code=403, detail="Invalid authorization code.")
 
     @staticmethod
-    def verify_jwt(token: str):
+    def verify_jwt(token: str) -> bool:
+        """
+        Checks that token is valid and unexpired
+        :param token: jwt token that will be checked
+        :return: returns result of the check
+        """
         is_token_valid: bool = True
 
         try:
