@@ -28,10 +28,22 @@ initial_data = {
 
 
 def remove_duplicates(data_list, looking_field, duplicates) -> list:
+    """
+    Removes duplicates from list of data.
+    :param data_list: list of data that need to be cleared
+    :param looking_field: field that will be used to check if item is duplicate
+    :param duplicates: list of duplicates
+    :return: returns list of data without duplicates
+    """
     return [i for i in data_list if i[looking_field] not in duplicates]
 
 
 def clear_destinations_collection_data(collection_name):
+    """
+    Clear destination initial data from duplicates
+    :param collection_name: name of collection
+    :return: returns data without duplicates
+    """
     looking_field = 'destinationName'
     data = initial_data.get(collection_name).copy()
     destinations = [item.get(looking_field) for item in data]
@@ -44,6 +56,11 @@ def clear_destinations_collection_data(collection_name):
 
 
 def clear_strategy_collection_data(collection_name):
+    """
+    Clear strategy initial data from duplicates
+    :param collection_name: name of collection
+    :return: returns data without duplicates
+    """
     looking_field = 'strategy'
     data = initial_data.get(collection_name).copy()
     strategy = data.get(looking_field)
@@ -55,6 +72,11 @@ def clear_strategy_collection_data(collection_name):
 
 
 def clear_collection_data(collection_name) -> list:
+    """
+    Calls clearing method that depends on collection name
+    :param collection_name: name of collection
+    :return: list of cleared data
+    """
     match collection_name:
         case 'destinations':
             return clear_destinations_collection_data(collection_name)
@@ -63,6 +85,10 @@ def clear_collection_data(collection_name) -> list:
 
 
 def init_database() -> None:
+    """
+    Fills database with data
+    :return: Nine
+    """
     collections = initial_data.keys()
 
     for collection_name in collections:
