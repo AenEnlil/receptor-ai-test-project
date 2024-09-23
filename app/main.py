@@ -19,9 +19,3 @@ def get_application() -> FastAPI:
 
 
 app = get_application()
-
-
-@app.get('/', dependencies=[Depends(JWTBearer())])
-def read_root():
-    return {'result': 'Hello World'}
-

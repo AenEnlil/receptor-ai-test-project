@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from starlette import status
 
+from app.auth.dependencies import JWTBearer
 from app.event.schemas import EventInputSchema
 from .service import get_strategy, route_event, update_strategy
 
@@ -10,7 +11,7 @@ router = APIRouter(
 )
 
 
-@router.post('/handle-event')
+@router.post('/handle-event', dependencies=[Depends(JWTBearer())])
 async def handle_event(event: EventInputSchema):
     data = event.model_dump(exclude_unset=True)
     payload = data.get('payload')
