@@ -4,6 +4,7 @@ from typing import Dict, List, Optional, Union
 
 from pydantic import BaseModel, field_validator
 from app.utils import check_if_syntax_is_correct, check_for_dangerous_code
+from .exceptions import CustomFilterValidationError
 
 
 class StrategyTypes(str, Enum):
@@ -34,33 +35,33 @@ class EventInputSchema(BaseModel):
     def strategy_validator(cls, value: str):
         strategy_types = iter(StrategyTypes)
 
-        if value not in strategy_types and not cls.check_custom_filter_function(value):
-            raise ValueError('strategy type error')
-        return value
+        try:
+            if value not in strategy_types and not cls.check_custom_filter_function(value):
+                raise ValueError('strategy type error')
+            return value
+        except Exception as e:
+            raise ValueError(e.args[0])
 
     @staticmethod
     def check_custom_filter_function(value):
+        validation_error_message = 'custom filter validation error'
 
         pattern = r"lambda +(\w*) *: *\[(.+)\]"
         if not re.match(pattern, value):
-            print('not matched')
-            return False
+            raise CustomFilterValidationError({validation_error_message: 'filter does not match pattern'})
 
         pattern = r"\[(.+)\]"
-        comprehension = re.search(pattern, value)
+        filter_part = re.search(pattern, value)
 
-        if not comprehension:
-            print('wrong comrehension')
-            return False
+        if not filter_part:
+            raise CustomFilterValidationError({validation_error_message: 'filter expression incorrect'})
 
-        comprehension = comprehension.group(0)
+        filter_code = filter_part.group(0)
 
-        if not check_for_dangerous_code(comprehension):
-            print('dangerous code')
-            return False
+        if not check_for_dangerous_code(filter_code):
+            raise CustomFilterValidationError({validation_error_message: 'filter contains dangerous code'})
 
         if not check_if_syntax_is_correct(value):
-            print('syntax error')
-            return False
+            raise CustomFilterValidationError({validation_error_message: 'filter syntax is incorrect'})
 
         return True
