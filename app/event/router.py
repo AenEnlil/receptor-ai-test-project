@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+from starlette import status
 
 from app.event.schemas import EventInputSchema
 from .service import get_strategy, route_event, update_strategy
@@ -15,10 +16,12 @@ async def handle_event(event: EventInputSchema):
     payload = data.get('payload')
     routing_intents = data.get('routingIntents')
     strategy, need_to_rewrite = get_strategy(data)
+    try:
+        result = route_event(payload, routing_intents, strategy)
+        if need_to_rewrite:
+            update_strategy(strategy)
 
-    result = route_event(payload, routing_intents, strategy)
-
-    if need_to_rewrite:
-        update_strategy(strategy)
-
-    return result
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=e.args[0])

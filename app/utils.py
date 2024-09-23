@@ -1,3 +1,7 @@
+import ast
+
+dangerous_words = ['import', 'os', 'system', 'open', 'from', 'while', 'range', 'Interpreter', 'runsource',
+                   'locals', 'globals']
 
 
 class AsyncIteratorWrapper:
@@ -17,3 +21,28 @@ class AsyncIteratorWrapper:
         except StopIteration:
             raise StopAsyncIteration
         return value
+
+
+def check_for_dangerous_code(code_string: str) -> bool:
+    """ Checks code string for dangerous code
+
+    :param code_string: code string that will be checked for dangerous code
+    :return: returns boolean result of check
+    """
+    for word in dangerous_words:
+        if word in code_string:
+            return False
+    return True
+
+
+def check_if_syntax_is_correct(code_string):
+    """ Checks code string for errors in syntax
+
+    :param code_string: code string that will be checked for syntax error
+    :return: returns boolean result of check
+    """
+    try:
+        ast.parse(code_string, mode='exec')
+        return True
+    except SyntaxError:
+        return False

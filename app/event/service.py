@@ -4,6 +4,7 @@ import requests
 
 
 from app.database import get_default_strategy_collection, get_destinations_collection
+from .exceptions import CustomFilterExecutionException, RoutesNotFound
 
 request_map = {
     'get': requests.get,
@@ -34,6 +35,15 @@ def get_destinations_from_database():
     return destinations
 
 
+def execute_custom_strategy(custom_strategy, routes):
+    strategy_code = f'({custom_strategy})({routes})'
+    try:
+        filtered_destinations = [route.get('destinationName') for route in eval(strategy_code)]
+        return filtered_destinations
+    except Exception as e:
+        raise CustomFilterExecutionException({'custom_filter_execution_error': e.args[0]})
+
+
 def filter_destinations_by_strategy(routes: List, strategy: str):
 
     match strategy:
@@ -45,7 +55,7 @@ def filter_destinations_by_strategy(routes: List, strategy: str):
             filtered_destinations = [route.get('destinationName') for route in routes if route.get('bytes') and
                                      route.get('bytes') < 1024]
         case _:
-            pass
+            filtered_destinations = execute_custom_strategy(strategy, routes)
     return filtered_destinations
 
 
@@ -82,6 +92,9 @@ def check_if_destination_valid(destination, destinations_in_database, filtered_d
 def route_event(payload: Dict, routing_intents: List, strategy: str) -> Dict:
     result = {}
     filtered_destinations = filter_destinations_by_strategy(routing_intents, strategy)
+    if not filtered_destinations:
+        raise RoutesNotFound('No routes found with current strategy')
+
     destinations_in_database = get_destinations_from_database()
 
     for route in routing_intents:
