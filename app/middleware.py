@@ -1,5 +1,6 @@
 import json
 
+from datetime import datetime
 from fastapi import Request
 from starlette import status
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -72,12 +73,31 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         :return: dump of response
         """
         headers = self.convert_binary_headers(response.raw_headers)
+        content_type = self.get_content_type(headers)
 
         body_iterator = response.__dict__['body_iterator']
         binary_response_body = [section async for section in body_iterator]
         response.__setattr__("body_iterator", AsyncIteratorWrapper(binary_response_body))
-        response_body = json.loads(binary_response_body[0].decode())
+        if content_type == 'application/json':
+            response_body = json.loads(binary_response_body[0].decode())
+        else:
+            response_body = binary_response_body
         return ResponseLoggingSchema(status_code=response.status_code, headers=headers, body=response_body).model_dump()
+
+    @staticmethod
+    def get_content_type(headers):
+        """
+        Extract content type from headers
+        :param headers: list of headers
+        :return: returns content type
+        """
+        content_type_header = [i for i in headers if 'content-type' in i.keys()]
+        if content_type_header:
+            content_type = content_type_header[0].get('content-type')
+            content_type = content_type.split(';')[0]
+            return content_type
+
+        return None
 
     @staticmethod
     def convert_binary_headers(binary_headers):
@@ -95,5 +115,5 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         :param response_data: response data
         :return: None
         """
-        data = {'request': request_data, 'response': response_data}
+        data = {'date': datetime.now(), 'request': request_data, 'response': response_data}
         get_logs_collection().insert_one(data)

@@ -17,4 +17,4 @@ class RequestLoggingSchema(BaseModel):
 class ResponseLoggingSchema(BaseModel):
     status_code: int
     headers: List[Dict] | None = None
-    body: Dict | None = None
+    body: Dict | List | None = None
