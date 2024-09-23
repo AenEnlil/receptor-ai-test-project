@@ -38,6 +38,11 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             return JSONResponse(status_code=status_code, content=error_details)
 
     async def set_body(self, request: Request):
+        """
+        Using to receive request body
+        :param request: request
+        :return: returns request body
+        """
         try:
             body = await request.json()
         except Exception:
@@ -45,6 +50,11 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         return body
 
     async def prepare_request_for_logging(self, request: Request):
+        """
+        Using to prepare request for logging. Transform headers, receive request body.
+        :param request: request
+        :return: returns dump of request
+        """
 
         request_data = dict(request.items())
         binary_headers = request_data.pop('headers')
@@ -56,6 +66,11 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         return RequestLoggingSchema(**request_data).model_dump()
 
     async def prepare_response_for_logging(self, response: Response):
+        """
+        Using to prepare response for logging.
+        :param response: response
+        :return: dump of response
+        """
         headers = self.convert_binary_headers(response.raw_headers)
 
         body_iterator = response.__dict__['body_iterator']
@@ -66,8 +81,19 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
 
     @staticmethod
     def convert_binary_headers(binary_headers):
+        """
+        Converts headers from binary to str
+        :param binary_headers: headers
+        :return: returns list of headers
+        """
         return [{raw_header[0].decode(): raw_header[1].decode()} for raw_header in binary_headers]
 
     def __log_to_db(self, request_data: dict, response_data: dict):
+        """
+        Saves request and response to database
+        :param request_data: request data
+        :param response_data: response data
+        :return: None
+        """
         data = {'request': request_data, 'response': response_data}
         get_logs_collection().insert_one(data)
