@@ -1,8 +1,9 @@
 import re
+
 from enum import Enum
 from typing import Dict, List, Optional, Union
-
 from pydantic import BaseModel, field_validator
+
 from app.utils import check_if_syntax_is_correct, check_for_dangerous_code
 from .exceptions import CustomFilterValidationError
 
@@ -26,13 +27,13 @@ class EventInputSchema(BaseModel):
     strategy: Optional[Union[StrategyTypes, str]] = None
 
     @field_validator('routingIntents')
-    def routing_intents_validator(cls, value: List):
+    def routing_intents_validator(cls, value: List) -> List:
         if not value:
             raise ValueError('Empty field')
         return value
 
     @field_validator('strategy')
-    def strategy_validator(cls, value: str):
+    def strategy_validator(cls, value: str) -> str:
         strategy_types = iter(StrategyTypes)
 
         try:
@@ -43,7 +44,12 @@ class EventInputSchema(BaseModel):
             raise ValueError(e.args[0])
 
     @staticmethod
-    def check_custom_filter_function(value):
+    def check_custom_filter_function(value: str) -> bool:
+        """
+        Checks if code string matches pattern, doesn't contain dangerous code and have right syntax
+        :param value: value is string that contain filter code
+        :return: return result of check
+        """
         validation_error_message = 'custom filter validation error'
 
         pattern = r"lambda +(\w*) *: *\[(.+)\]"
