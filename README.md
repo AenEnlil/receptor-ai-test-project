@@ -87,27 +87,27 @@
         3.  Install Python:
             sudo apt install python3.10 -y
 
-  - ##### Setup Environment
-          1. Install venv package:
-              sudo apt install python3.10-venv
+- ##### Setup Environment
+        1. Install venv package:
+            sudo apt install python3.10-venv
 
-          2. Create virtual environment:
-              python3.10 -m venv project_env
+        2. Create virtual environment:
+            python3.10 -m venv project_env
 
-          3. Go to environment folder and activate it:
-              source project_env/bin/activate
+        3. Go to environment folder and activate it:
+            source project_env/bin/activate
 
-          4. Install requirements from application folder:
-              pip install -r requirements.txt
+        4. Install requirements from application folder:
+            pip install -r requirements.txt
 
-    - ##### Run application
-          1. Go to project root
+- ##### Run application
+      1. Go to project root
 
-          2. Initialize database:
-            python seeding.py
+      2. Initialize database:
+        python seeding.py
 
-          3. Run application:
-            uvicorn app.main:app --reload
+      3. Run application:
+        uvicorn app.main:app --reload
 
 #### Run Tests
 
