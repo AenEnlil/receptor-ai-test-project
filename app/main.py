@@ -1,8 +1,7 @@
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 
 from .api import api_router
-from .auth.dependencies import JWTBearer
 from .config import get_settings
 from .middleware import RequestLoggingMiddleware
 
