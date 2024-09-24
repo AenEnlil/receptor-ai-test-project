@@ -40,13 +40,15 @@ def update_strategy(new_strategy: str):
     get_default_strategy_collection().find_one_and_update({}, {"$set": {'strategy': new_strategy}})
 
 
-def get_destinations_from_database() -> Dict:
+def get_destinations_from_database(destination_names: List) -> Dict:
     """
-    Receives list of stored destinations from database. Convert list to dict, that contain data
-    in format {destination_name: destination data} and returns it
+    Receives destination data from database for every destination in destination_names.
+    Convert list to dict, that contain data in format {destination_name: destination data} and returns it
+    :param destination_names: list of destinations that will be looked
     :return: dictionary of destinations from database
     """
-    destinations_from_database = list(get_destinations_collection().find({}, {'_id': 0}))
+    destinations_from_database = list(get_destinations_collection().find({'destinationName': {'$in': destination_names}},
+                                                                         {'_id': 0}))
     destinations = {destination.pop('destinationName'): destination for destination in destinations_from_database}
 
     return destinations
@@ -145,7 +147,8 @@ def route_event(payload: Dict, routing_intents: List, strategy: str) -> Dict:
     if not filtered_destinations:
         raise RoutesNotFound('No routes found with current strategy')
 
-    destinations_in_database = get_destinations_from_database()
+    destination_names_from_routing_intents = [route.get('destinationName') for route in routing_intents]
+    destinations_in_database = get_destinations_from_database(destination_names_from_routing_intents)
 
     for route in routing_intents:
         route_destination = route.get('destinationName')
