@@ -11,8 +11,11 @@ services:
 
   application:
     container_name: application
+    env_file: ./.env
     environment:
       - MONGO_URL=mongodb://database:27017
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
     ports:
       - '8000:8000'
     build:

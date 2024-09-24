@@ -8,6 +8,20 @@
 - Docker == 27.2.1
 - docker-compose == 2.29.2
 
+#### Environment variables:
+    Application have next environment variables:
+
+    - ALGORITHM - Type of algorithm used in JWT encoding process. Required. 
+    - ACCESS_TOKEN_LIFETIME_MINUTES - Defines JWT token lifetime. Default value - 15 minutes
+    - MONGO_URL - Connection string to MongoDB. Required if application is started manually. It is already placed in a yml file to run through docker
+    - DATABASE_NAME - Name of database. Default value - project_db.
+    - SECRET_KEY - Used to encrypt and decrypt JWT token. Required. You can generate it with this command: openssl rand -hex 32 
+  
+    Before run application manually or through docker you need to create .env file where this variables will be defined. 
+  
+    If you run application manually create .env in project root directory, if you run through docker create .env inside deployment/local
+                
+
 #### Run application with docker:
 
 - ##### Install Docker and docker-compose
@@ -73,26 +87,26 @@
         3.  Install Python:
             sudo apt install python3.10 -y
 
-- ##### Setup Environment
-        1. Install venv package:
-            sudo apt install python3.10-venv
+  - ##### Setup Environment
+          1. Install venv package:
+              sudo apt install python3.10-venv
 
-        2. Create virtual environment:
-            python3.10 -m venv project_env
+          2. Create virtual environment:
+              python3.10 -m venv project_env
 
-        3. Go to environment folder and activate it:
-            source project_env/bin/activate
+          3. Go to environment folder and activate it:
+              source project_env/bin/activate
 
-        4. Install requirements from application folder:
-            pip install -r requirements.txt
+          4. Install requirements from application folder:
+              pip install -r requirements.txt
 
-- ##### Run application
-        1. Go to project root
+    - ##### Run application
+          1. Go to project root
 
-        2. Initialize database:
+          2. Initialize database:
             python seeding.py
 
-        3. Run application:
+          3. Run application:
             uvicorn app.main:app --reload
 
 #### Run Tests

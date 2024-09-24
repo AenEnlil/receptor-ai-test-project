@@ -11,6 +11,6 @@ class BaseAppSettings(BaseSettings):
 
     #  DATABASE_CONFIGURATION
     MONGO_URL: str
-    DATABASE_NAME: str
+    DATABASE_NAME: str = 'project_db'
 
     model_config = SettingsConfigDict(env_file=".env")
