@@ -1,5 +1,9 @@
 # test project
 
+Application can route events to destinations specified in request. Destinations can be filtered by strategy. 
+Strategy can have one of following values: all | important | small | custom filter. 
+To create custom filter use next pattern: 'lambda container: [item for item in container if /expression/]'
+
 #### Technologies:
 - Python == 3.10
 - Fast Api == 0.115.0
@@ -110,6 +114,8 @@
         uvicorn app.main:app --reload
 
 #### Run Tests
+      1. From root directory run:
+        pytest
 
 
 
