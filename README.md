@@ -50,7 +50,9 @@ To create custom filter use next pattern: 'lambda container: [item for item in c
         1. From project root go to deployment/local:
             cd deployment/local
 
-        2. Run containers using docker-compose:
+        2. Create .env file with environment variables
+
+        3. Run containers using docker-compose:
             docker-compose up --build
 
 #### Run application manually:
@@ -107,10 +109,12 @@ To create custom filter use next pattern: 'lambda container: [item for item in c
 - ##### Run application
       1. Go to project root
 
-      2. Initialize database:
+      2. Create .env file with environment variables
+
+      3. Initialize database:
         python seeding.py
 
-      3. Run application:
+      4. Run application:
         uvicorn app.main:app --reload
 
 #### Run Tests
