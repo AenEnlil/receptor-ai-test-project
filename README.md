@@ -51,7 +51,7 @@ To create custom filter use next pattern: 'lambda container: [item for item in c
             cd deployment/local
 
         2. Run containers using docker-compose:
-            docker-compose up
+            docker-compose up --build
 
 #### Run application manually:
     # For Ubuntu 20.04
