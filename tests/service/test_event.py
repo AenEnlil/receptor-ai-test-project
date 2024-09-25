@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 from app.event.exceptions import CustomFilterExecutionException
@@ -35,9 +33,38 @@ USER_REQUEST_BODY = {
 }
 
 
-async def test_get_strategy_with_strategy_in_request():
-    print(os.getenv('DATABASE_NAME'))
-    pass
+async def test_get_strategy_with_strategy_in_request(app, default_strategy):
+    received_strategy, need_to_rewrite = get_strategy(USER_REQUEST_BODY)
+    assert received_strategy
+    assert received_strategy == USER_REQUEST_BODY.get('strategy')
+    assert need_to_rewrite
+
+
+async def test_get_strategy_without_strategy_in_request(app, default_strategy):
+    request = USER_REQUEST_BODY.copy()
+    request.pop('strategy')
+    received_strategy, need_to_rewrite = get_strategy(request)
+    assert received_strategy
+    assert received_strategy == default_strategy.get('strategy')
+    assert not need_to_rewrite
+
+
+async def test_update_strategy(app, default_strategy):
+    update_strategy('important')
+
+    request = USER_REQUEST_BODY.copy()
+    request.pop('strategy')
+
+    received_strategy, need_to_rewrite = get_strategy(request)
+
+    assert received_strategy != default_strategy.get('strategy')
+    assert received_strategy == 'important'
+
+
+async def test_get_destinations_from_database(app, destinations):
+    destination_names = [i.get('destinationName') for i in USER_REQUEST_BODY.get('routingIntents')]
+    received_destinations = get_destinations_from_database(destination_names)
+    assert received_destinations
 
 
 async def test_execute_custom_filter_strategy():
@@ -140,3 +167,14 @@ async def test_check_destination_unknown():
     result = check_if_destination_valid(destination, destinations_in_db, filtered_destinations)
 
     assert not result
+
+
+async def test_route_event(app, destinations):
+    payload = USER_REQUEST_BODY.get('payload')
+    routes = USER_REQUEST_BODY.get('routingIntents')
+    strategy = 'all'
+    result = route_event(payload, routes, strategy)
+
+    assert result
+    assert result.get('destination1') is True
+    assert result.get('destination43') is False
