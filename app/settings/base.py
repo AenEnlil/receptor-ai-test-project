@@ -1,8 +1,15 @@
+from enum import Enum
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+class AppEnvTypes(Enum):
+    local: str = 'local'
+    test: str = 'test'
+
+
 class BaseAppSettings(BaseSettings):
+    ENVIRONMENT: AppEnvTypes = AppEnvTypes.local
 
     #  JWT_CONFIGURATION
     SECRET_KEY: str

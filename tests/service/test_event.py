@@ -3,34 +3,7 @@ import pytest
 from app.event.exceptions import CustomFilterExecutionException
 from app.event.service import get_strategy, update_strategy, get_destinations_from_database, execute_custom_strategy, \
     filter_destinations_by_strategy, send_payload, check_if_destination_valid, route_event
-
-
-USER_REQUEST_BODY = {
-    "payload": {"a": "1"},
-    "routingIntents": [
-        {
-            "destinationName": "destination1",
-            "important": True,
-            "bytes": 15,
-            "score": 0
-        },
-        {
-            "destinationName": "destination2",
-            "important": False
-        },
-        {
-            "destinationName": "destination3",
-            "bytes": 15,
-            "score": 1
-        },
-        {
-            "destinationName": "destination43",
-            "bytes": 15,
-            "score": 0
-        }
-    ],
-    "strategy": "small"
-}
+from tests.conftest import USER_REQUEST_BODY
 
 
 async def test_get_strategy_with_strategy_in_request(app, default_strategy):
